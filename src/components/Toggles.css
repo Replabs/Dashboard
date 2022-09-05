@@ -1,0 +1,27 @@
+.Toggles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    margin: 16px;
+    padding: 0;
+    border: 1px solid #C4C4C4;
+}
+
+.Toggles-Grid {
+    display: relative;
+    top: 0;
+    left: 0;
+}
+
+.Button-Container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.Row {
+    display: flex;
+    justify-content: space-between;
+}
