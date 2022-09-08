@@ -1,25 +1,19 @@
 import React, { useEffect, useState } from "react";
-import {
-  Node,
-  Edge,
-  Network,
-  Options,
-  DataInterfaceEdges,
-} from "vis-network/peer/esm/vis-network";
+import { Node, Edge, Network, Options } from "vis-network/peer/esm/vis-network";
 import { DataSet } from "vis-data/peer/esm/vis-data";
-import { HyperParams } from "../App";
-import { CircularProgress, Drawer } from "@mui/material";
-import SidePanel from "./SidePanel";
+import { DaoHyperParams } from "../../App";
+import { CircularProgress } from "@mui/material";
+import EdgePanel from "./EdgePanel";
 
 type Props = {
-  hyperParams: HyperParams;
+  hyperParams: DaoHyperParams;
 };
 
 export type EdgeData = {
   id: string;
   from: string;
   to: string;
-  reply_tweet_ids: string[];
+  texts: string[];
   value: number;
 };
 
@@ -90,19 +84,19 @@ function LoadingView() {
 /**
  * The graph of the twitter list.
  */
-function Graph(props: Props) {
+function DaoGraph(props: Props) {
   const [data, setData] = useState<{
     nodes: DataSet<Node>;
     edges: DataSet<Edge>;
   } | null>(null);
   const [isLoading, setIsLoading] = useState<Boolean>(false);
-  const [selectedEdge, setSelectedEdge] = useState<EdgeData | null>(null);
+  const [selectedEdges, setSelectedEdges] = useState<EdgeData[] | null>(null);
 
   const fetchData = async () => {
     setIsLoading(true);
 
     const response = await fetch(
-      `http://127.0.0.1:5000/graph/1548015533710123010/holochain?alpha=${props.hyperParams.alpha}&sentiment_weight=${props.hyperParams.sentiment_weight}&similarity_threshold=${props.hyperParams.similarity_threshold}`
+      `http://127.0.0.1:5000/dao_graph/${props.hyperParams.name}/${props.hyperParams.topic}?alpha=${props.hyperParams.alpha}&similarity_threshold=${props.hyperParams.similarity_threshold}`
     );
 
     if (!response.ok) {
@@ -118,14 +112,13 @@ function Graph(props: Props) {
         .map((n: string) => JSON.parse(n))
         .map((n: unknown[]) => {
           const data = n[1] as {
-            label: string;
             size: number;
           };
 
           return {
             id: n[0],
-            label: data.label,
-            title: data.label,
+            label: n[0],
+            title: n[0],
             value: data.size,
           };
         })
@@ -138,16 +131,16 @@ function Graph(props: Props) {
         .map((e: unknown[]) => {
           const id = `${e[0]}${e[1]}`;
           const data = e[2] as {
-            reply_tweet_ids: string[];
             weight: number;
+            texts: string[];
           };
 
           return {
             id: id,
             to: e[1],
             from: e[0],
-            reply_tweet_ids: data.reply_tweet_ids,
             value: data.weight,
+            texts: data.texts,
           } as EdgeData;
         })
     );
@@ -162,8 +155,8 @@ function Graph(props: Props) {
     const network = new Network(container!!, data!!, options);
 
     network.on("selectEdge", (selected: { edges: string[] }) => {
-      const edge = data?.edges.get(selected.edges[0]);
-      setSelectedEdge(edge as EdgeData);
+      const edges = selected.edges.map((e) => data!!.edges.get(e) as EdgeData);
+      setSelectedEdges(edges);
     });
   };
 
@@ -184,10 +177,10 @@ function Graph(props: Props) {
     <LoadingView />
   ) : (
     <React.Fragment>
-      <SidePanel edge={selectedEdge} />
+      <EdgePanel edges={selectedEdges} />
       <div id="graph" />
     </React.Fragment>
   );
 }
 
-export default Graph;
+export default DaoGraph;

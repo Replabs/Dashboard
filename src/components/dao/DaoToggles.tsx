@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 
-import { Box, Button, TextField, Typography } from "@mui/material";
-import Card from "@mui/material/Card";
+import { Box, Button, TextField } from "@mui/material";
 import Stack from "@mui/material/Stack";
-import "./Toggles.css";
-import { HyperParams } from "../App";
+import "../Toggles.css";
+import { DaoHyperParams } from "../../App";
 
 type Props = {
-  initialParams: HyperParams;
-  onUpdate: (params: HyperParams) => void;
+  initialParams: DaoHyperParams;
+  onUpdate: (params: DaoHyperParams) => void;
 };
 
 type FieldProps = {
@@ -20,7 +19,8 @@ type FieldProps = {
 function Field(props: FieldProps) {
   return (
     <TextField
-      id="outlined-number"
+      id={`textfield-${props.label}`}
+      className="TextField"
       label={props.label}
       type="number"
       value={props.value}
@@ -36,14 +36,33 @@ function Field(props: FieldProps) {
   );
 }
 
-function Toggles(props: Props) {
-  const [hyperParams, setHyperParams] = useState<HyperParams>(
+function DaoToggles(props: Props) {
+  const [hyperParams, setHyperParams] = useState<DaoHyperParams>(
     props.initialParams
   );
 
   return (
-    <Card elevation={0} className="Toggles">
+    <Box className="Toggles">
       <Stack>
+        <TextField
+          id="textfield-topic"
+          label="Topic"
+          className="TextField"
+          value={hyperParams.topic}
+          onChange={(e) =>
+            setHyperParams({
+              ...hyperParams,
+              topic: e.target.value,
+            })
+          }
+          InputProps={{ inputProps: { min: "0", max: "1", step: "0.1" } }}
+          variant="outlined"
+          size="small"
+          sx={{
+            margin: "12px",
+            width: "180px",
+          }}
+        />
         <Field
           label="Alha"
           value={hyperParams.alpha}
@@ -51,16 +70,6 @@ function Toggles(props: Props) {
             setHyperParams({
               ...hyperParams,
               alpha: parseFloat(e.target.value),
-            })
-          }
-        />
-        <Field
-          label="Sentiment Weight"
-          value={hyperParams.alpha}
-          onChange={(e) =>
-            setHyperParams({
-              ...hyperParams,
-              sentiment_weight: parseFloat(e.target.value),
             })
           }
         />
@@ -75,7 +84,7 @@ function Toggles(props: Props) {
           }
         />
       </Stack>
-      <div className="Button-Container">
+      <Box className="Button-Container">
         <Button
           variant="contained"
           className="Button"
@@ -83,9 +92,9 @@ function Toggles(props: Props) {
         >
           Update Graph
         </Button>
-      </div>
-    </Card>
+      </Box>
+    </Box>
   );
 }
 
-export default Toggles;
+export default DaoToggles;
