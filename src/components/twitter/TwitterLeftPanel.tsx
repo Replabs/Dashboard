@@ -3,7 +3,14 @@ import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import { Button, Divider, Stack, Typography } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  Divider,
+  Stack,
+  Typography,
+} from "@mui/material";
 import "../SidePanel.css";
 import { TwitterHyperParams } from "../../App";
 import TwitterToggles from "./TwitterToggles";
@@ -28,6 +35,31 @@ type ListInfo = {
   member_count: number;
   name: string;
 };
+
+type SimpleDialogProps = {
+  open: boolean;
+  selectedValue: string;
+  onClose: (value: string) => void;
+};
+
+function SimpleDialog(props: SimpleDialogProps) {
+  const { onClose, selectedValue, open } = props;
+
+  const handleClose = () => {
+    onClose(selectedValue);
+  };
+
+  const handleListItemClick = (value: string) => {
+    onClose(value);
+  };
+
+  return (
+    <Dialog onClose={handleClose} open={open}>
+      <DialogTitle>What's this?</DialogTitle>
+      <Typography></Typography>
+    </Dialog>
+  );
+}
 
 function TwitterLeftPanel(props: Props) {
   const [listInfo, setListInfo] = useState<ListInfo | null>(null);

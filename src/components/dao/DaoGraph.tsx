@@ -4,6 +4,7 @@ import { DataSet } from "vis-data/peer/esm/vis-data";
 import { DaoHyperParams } from "../../App";
 import { CircularProgress } from "@mui/material";
 import EdgePanel from "./EdgePanel";
+import LoadingView from "../LoadingView";
 
 type Props = {
   hyperParams: DaoHyperParams;
@@ -55,31 +56,6 @@ const options: Options = {
     solver: "hierarchicalRepulsion",
   },
 };
-
-/**
- * A full screen loading spinner.
- */
-function LoadingView() {
-  return (
-    <div
-      style={{
-        height: "100%",
-        width: "100%",
-        position: "relative",
-      }}
-    >
-      <CircularProgress
-        sx={{
-          position: "absolute",
-          left: "50%",
-          top: "50%",
-          "-webkit-transform": "translate(-50%, -50%)",
-          transform: "translate(-50%, -50%)",
-        }}
-      />
-    </div>
-  );
-}
 
 /**
  * The graph of the twitter list.

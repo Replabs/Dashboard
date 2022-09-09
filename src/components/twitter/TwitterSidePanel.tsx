@@ -8,60 +8,73 @@ import { CircularProgress, Grid } from "@mui/material";
 import "../SidePanel.css";
 
 import { Tweet } from "react-twitter-widgets";
+import { SettingsInputAntennaTwoTone } from "@mui/icons-material";
+import LoadingView from "../LoadingView";
+
+// import TweetEmbed from "react-tweet-embed";
+
 // import { Tweet } from "react-twitter-widgets";
 
 type Props = {
-  edges: TwitterEdge[] | null;
+  edges: TwitterEdge[];
 };
 
-function TweetView(props: { id: string }) {
-  const [isLoaded, setIsLoaded] = useState<boolean>(false);
+// function TweetView(props: { id: string }) {
+//   const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
-  return (
-    <React.Fragment>
-      {!isLoaded && (
-        <Grid
-          container
-          justifyContent="center"
-          alignItems="center"
-          sx={{ height: "400pxfi", width: "100%" }}
-        >
-          <CircularProgress />
-        </Grid>
-      )}
-      <Tweet
-        tweetId={props.id}
-        options={{ maxwidth: 400 }}
-        onLoad={() => {
-          setIsLoaded(true);
-        }}
-      />
-    </React.Fragment>
-  );
-}
+//   return (
+//     <React.Fragment>
+//       {!isLoaded && (
+//         <Grid
+//           container
+//           justifyContent="center"
+//           alignItems="center"
+//           sx={{ height: "400pxfi", width: "100%" }}
+//         >
+//           <CircularProgress />
+//         </Grid>
+//       )}
+//       <TweetEmbed
+//         tweetId={props.id}
+//         options={{ maxwidth: 400 }}
+//         onTweetLoadSuccess={() => {
+//           setIsLoaded(true);
+//         }}
+//         // onLoad={() => {
+//         //   setIsLoaded(true);
+//         // }}
+//       />
+//     </React.Fragment>
+//   );
+// }
 
 function TwitterSidePanel(props: Props) {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
   useEffect(() => {
-    if (!props.edges) {
-      return;
-    }
-  });
+    setIsLoading(true);
+  }, [props.edges]);
 
   const list = () => {
-    return !props.edges ? (
-      <div />
-    ) : (
+    return (
       <Box
         sx={{ width: 432 }}
         role="presentation"
-        onClick={toggleDrawer(false)}
-        onKeyDown={toggleDrawer(false)}
+        // onClick={toggleDrawer(false)}
+        // onKeyDown={toggleDrawer(false)}
       >
+        {isLoading && <LoadingView />}
         <List>
           {props.edges.map((edge) =>
             edge.reply_tweet_ids.map((id) => (
               <ListItem key={id}>
-                <TweetView id={id} />
+                <Tweet
+                  tweetId={id}
+                  options={{ maxwidth: 400 }}
+                  onLoad={() => {
+                    setIsLoading(false);
+                  }}
+                />
               </ListItem>
             ))
           )}
@@ -70,28 +83,13 @@ function TwitterSidePanel(props: Props) {
     );
   };
 
-  const toggleDrawer = (open: boolean) => (
-    event: React.KeyboardEvent | React.MouseEvent
-  ) => {
-    // setEdge(null);
-    // if (
-    //   event.type === "keydown" &&
-    //   ((event as React.KeyboardEvent).key === "Tab" ||
-    //     (event as React.KeyboardEvent).key === "Shift")
-    // ) {
-    //   return;
-    // }
-    // setIsOpen(isOpen);
-  };
-
   return (
     <div className="Drawer-Container">
       <Drawer
         elevation={2}
         anchor="right"
-        open={Boolean(props.edges)}
+        open={props.edges.length > 0}
         variant="persistent"
-        onClose={toggleDrawer(false)}
       >
         {list()}
       </Drawer>

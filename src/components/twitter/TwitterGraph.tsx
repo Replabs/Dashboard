@@ -4,6 +4,7 @@ import { DataSet } from "vis-data/peer/esm/vis-data";
 import { TwitterHyperParams } from "../../App";
 import { CircularProgress } from "@mui/material";
 import TwitterSidePanel from "./TwitterSidePanel";
+import LoadingView from "../LoadingView";
 
 type Props = {
   hyperParams: TwitterHyperParams;
@@ -64,31 +65,6 @@ const options: Options = {
     solver: "hierarchicalRepulsion",
   },
 };
-
-/**
- * A full screen loading spinner.
- */
-function LoadingView() {
-  return (
-    <div
-      style={{
-        height: "100%",
-        width: "100%",
-        position: "relative",
-      }}
-    >
-      <CircularProgress
-        sx={{
-          position: "absolute",
-          left: "50%",
-          top: "50%",
-          "-webkit-transform": "translate(-50%, -50%)",
-          transform: "translate(-50%, -50%)",
-        }}
-      />
-    </div>
-  );
-}
 
 /**
  * The graph of the twitter list.
@@ -194,9 +170,11 @@ function TwitterGraph(props: Props) {
     }
 
     const edgeIds = network.getConnectedEdges(props.selectedTopResult.id);
-    const edges = edgeIds.map((id) => data!!.edges.get(id) as TwitterEdge);
+    const incomingEdges = edgeIds
+      .map((id) => data!!.edges.get(id) as TwitterEdge)
+      .filter((e) => e.to == props.selectedTopResult?.id);
 
-    setSelectedEdges(edges);
+    setSelectedEdges(incomingEdges);
   }, [props.selectedTopResult]);
 
   // Render the graph from the cached data when possible.
@@ -211,7 +189,7 @@ function TwitterGraph(props: Props) {
     <LoadingView />
   ) : (
     <React.Fragment>
-      <TwitterSidePanel edges={selectedEdges} />
+      <TwitterSidePanel edges={selectedEdges ? selectedEdges : []} />
       <div id="graph" />
     </React.Fragment>
   );
