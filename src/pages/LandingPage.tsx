@@ -3,9 +3,41 @@ import { Link } from "react-router-dom";
 import "../App.css";
 import { Box, Button, Grid, Stack, TextField, Typography } from "@mui/material";
 
-function LandingPage() {
+function ListForm() {
   const [twitterListId, setTwitterListId] = useState<string>("");
+  const isValidList = twitterListId.length > 3 && /^\d+$/.test(twitterListId);
 
+  return (
+    <Stack direction="column">
+      <TextField
+        className="TextField"
+        label="Twitter List ID"
+        type="text"
+        onChange={(e) => setTwitterListId(e.target.value)}
+        variant="outlined"
+        size="small"
+        sx={{
+          maxWidth: "400px",
+          margin: "12px",
+        }}
+      />
+      <Button disabled={!isValidList}>
+        {isValidList ? (
+          <Link
+            style={{ textDecoration: "none", color: "inherit" }}
+            to={`/twitter/${twitterListId}`}
+          >
+            Show Graph
+          </Link>
+        ) : (
+          "Show Graph"
+        )}
+      </Button>
+    </Stack>
+  );
+}
+
+function LandingPage() {
   return (
     <>
       <Grid
@@ -26,23 +58,7 @@ function LandingPage() {
             alignItems="center"
           >
             <Grid item>
-              <Stack direction="column">
-                <TextField
-                  className="TextField"
-                  label="Twitter List ID"
-                  type="text"
-                  onChange={(e) => setTwitterListId(e.target.value)}
-                  variant="outlined"
-                  size="small"
-                  sx={{
-                    maxWidth: "400px",
-                    margin: "12px",
-                  }}
-                />
-                <Link to={`/twitter/${twitterListId}`}>
-                  <Button>Show Graph</Button>
-                </Link>
-              </Stack>
+              <ListForm />
             </Grid>
           </Grid>
         </Box>
