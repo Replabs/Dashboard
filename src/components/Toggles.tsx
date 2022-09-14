@@ -2,13 +2,19 @@ import React, { useState } from "react";
 
 import { Box, Button, IconButton, TextField } from "@mui/material";
 import Stack from "@mui/material/Stack";
-import { TwitterHyperParams } from "../../App";
-import "../Toggles.css";
+import "./Toggles.css";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
+type HyperParameters = {
+  alpha: number;
+  topic: string;
+  similarity_threshold: number;
+  sentiment_weight?: number;
+};
+
 type Props = {
-  initialParams: TwitterHyperParams;
-  onUpdate: (params: TwitterHyperParams) => void;
+  initialParams: HyperParameters;
+  onUpdate: (params: HyperParameters) => void;
 };
 
 type FieldProps = {
@@ -40,8 +46,8 @@ function Field(props: FieldProps) {
   );
 }
 
-function TwitterToggles(props: Props) {
-  const [hyperParams, setHyperParams] = useState<TwitterHyperParams>(
+function Toggles(props: Props) {
+  const [hyperParams, setHyperParams] = useState<HyperParameters>(
     props.initialParams
   );
 
@@ -80,16 +86,18 @@ function TwitterToggles(props: Props) {
             })
           }
         />
-        <Field
-          label="Sentiment Weight"
-          value={hyperParams.sentiment_weight}
-          onChange={(e) =>
-            setHyperParams({
-              ...hyperParams,
-              sentiment_weight: parseFloat(e.target.value),
-            })
-          }
-        />
+        {hyperParams.sentiment_weight && (
+          <Field
+            label="Sentiment Weight"
+            value={hyperParams.sentiment_weight}
+            onChange={(e) =>
+              setHyperParams({
+                ...hyperParams,
+                sentiment_weight: parseFloat(e.target.value),
+              })
+            }
+          />
+        )}
         <Field
           label="Similarity Threshold"
           value={hyperParams.similarity_threshold}
@@ -114,4 +122,4 @@ function TwitterToggles(props: Props) {
   );
 }
 
-export default TwitterToggles;
+export default Toggles;

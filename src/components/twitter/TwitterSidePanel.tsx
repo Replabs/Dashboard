@@ -3,50 +3,54 @@ import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import { TwitterEdge } from "./TwitterGraph";
-import { CircularProgress, Grid } from "@mui/material";
-import "../SidePanel.css";
-
+import { TweetData, TwitterEdge } from "./TwitterGraph";
 import { Tweet } from "react-twitter-widgets";
-import { SettingsInputAntennaTwoTone } from "@mui/icons-material";
 import LoadingView from "../LoadingView";
-
-// import TweetEmbed from "react-tweet-embed";
-
-// import { Tweet } from "react-twitter-widgets";
+import "../SidePanel.css";
+import { Divider, Typography } from "@mui/material";
+import { TwitterHyperParams } from "../../App";
+import { Stack } from "@mui/system";
 
 type Props = {
   edges: TwitterEdge[];
+  hyperParams: TwitterHyperParams;
 };
 
-// function TweetView(props: { id: string }) {
-//   const [isLoaded, setIsLoaded] = useState<boolean>(false);
-
-//   return (
-//     <React.Fragment>
-//       {!isLoaded && (
-//         <Grid
-//           container
-//           justifyContent="center"
-//           alignItems="center"
-//           sx={{ height: "400pxfi", width: "100%" }}
-//         >
-//           <CircularProgress />
-//         </Grid>
-//       )}
-//       <TweetEmbed
-//         tweetId={props.id}
-//         options={{ maxwidth: 400 }}
-//         onTweetLoadSuccess={() => {
-//           setIsLoaded(true);
-//         }}
-//         // onLoad={() => {
-//         //   setIsLoaded(true);
-//         // }}
-//       />
-//     </React.Fragment>
-//   );
-// }
+function TwitterStats(props: {
+  tweet: TweetData;
+  hyperParams: TwitterHyperParams;
+}) {
+  return (
+    <Box
+      sx={{
+        width: "100%",
+      }}
+    >
+      <Stack direction="row" justifyContent="space-between">
+        <Typography sx={{ fontWeight: 600, color: "#666" }}>
+          Relevance:
+        </Typography>
+        <Typography sx={{ color: "#666" }}>
+          {Math.round(props.tweet.weight * 100)}
+        </Typography>
+      </Stack>
+      <Stack direction="row" justifyContent="space-between">
+        <Typography sx={{ fontWeight: 600, color: "#666" }}>
+          Sentiment:
+        </Typography>
+        <Typography sx={{ color: "#666" }}>{props.tweet.sentiment}</Typography>
+      </Stack>
+      <Stack direction="row" justifyContent="space-between">
+        <Typography sx={{ fontWeight: 600, color: "#666" }}>
+          Relatedness to {props.hyperParams.topic}:{" "}
+        </Typography>
+        <Typography sx={{ color: "#666" }}>
+          {Math.round(props.tweet.similarity * 100)}%
+        </Typography>
+      </Stack>
+    </Box>
+  );
+}
 
 function TwitterSidePanel(props: Props) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -56,26 +60,35 @@ function TwitterSidePanel(props: Props) {
   }, [props.edges]);
 
   const list = () => {
+    console.log(props.edges);
     return (
-      <Box
-        sx={{ width: 432 }}
-        role="presentation"
-        // onClick={toggleDrawer(false)}
-        // onKeyDown={toggleDrawer(false)}
-      >
+      <Box sx={{ width: 432 }} role="presentation">
         {isLoading && <LoadingView />}
         <List>
           {props.edges.map((edge) =>
-            edge.reply_tweet_ids.map((id) => (
-              <ListItem key={id}>
-                <Tweet
-                  tweetId={id}
-                  options={{ maxwidth: 400 }}
-                  onLoad={() => {
-                    setIsLoading(false);
-                  }}
-                />
-              </ListItem>
+            edge.tweets.map((tweet) => (
+              <>
+                <ListItem
+                  key={tweet.reply_tweet_id}
+                  sx={{ paddingBottom: "0px" }}
+                >
+                  <Tweet
+                    tweetId={tweet.reply_tweet_id}
+                    options={{ maxwidth: 400 }}
+                    onLoad={() => {
+                      setIsLoading(false);
+                    }}
+                  />
+                </ListItem>
+                <ListItem sx={{ paddingTop: "0px" }}>
+                  <TwitterStats
+                    key={`${tweet.reply_tweet_id}-stats`}
+                    tweet={tweet}
+                    hyperParams={props.hyperParams}
+                  />
+                </ListItem>
+                <Divider />
+              </>
             ))
           )}
         </List>

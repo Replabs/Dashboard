@@ -12,11 +12,19 @@ type Props = {
   setTopResults: (topResults: TwitterNode[]) => void;
 };
 
+export type TweetData = {
+  reply_tweet_id: string;
+  similarity: number;
+  sentiment: string;
+  weight: number;
+  url: string;
+};
+
 export type TwitterEdge = {
   id: string;
   from: string;
   to: string;
-  reply_tweet_ids: string[];
+  tweets: TweetData[];
   value: number;
 };
 
@@ -120,7 +128,7 @@ function TwitterGraph(props: Props) {
       .map((e: unknown[]) => {
         const id = `${e[0]}${e[1]}`;
         const data = e[2] as {
-          reply_tweet_ids: string[];
+          tweets: TweetData[];
           weight: number;
         };
 
@@ -128,7 +136,7 @@ function TwitterGraph(props: Props) {
           id: id,
           to: e[1],
           from: e[0],
-          reply_tweet_ids: data.reply_tweet_ids,
+          tweets: data.tweets,
           value: data.weight,
         } as TwitterEdge;
       });
@@ -189,7 +197,10 @@ function TwitterGraph(props: Props) {
     <LoadingView />
   ) : (
     <React.Fragment>
-      <TwitterSidePanel edges={selectedEdges ? selectedEdges : []} />
+      <TwitterSidePanel
+        edges={selectedEdges ? selectedEdges : []}
+        hyperParams={props.hyperParams}
+      />
       <div id="graph" />
     </React.Fragment>
   );

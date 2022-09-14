@@ -153,7 +153,7 @@ function DaoGraph(props: Props) {
     <LoadingView />
   ) : (
     <React.Fragment>
-      <EdgePanel edges={selectedEdges} />
+      <EdgePanel edges={selectedEdges ? selectedEdges : []} />
       <div id="graph" />
     </React.Fragment>
   );

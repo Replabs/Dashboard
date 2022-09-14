@@ -6,20 +6,9 @@ import {
   useParams,
 } from "react-router-dom";
 import "./App.css";
-import TwitterGraph, {
-  TwitterEdge,
-  TwitterNode,
-} from "./components/twitter/TwitterGraph";
+import TwitterGraph, { TwitterNode } from "./components/twitter/TwitterGraph";
 import DaoGraph from "./components/dao/DaoGraph";
-import DaoToggles from "./components/dao/DaoToggles";
-import TwitterToggles from "./components/twitter/TwitterToggles";
-import {
-  Box,
-  createMuiTheme,
-  createTheme,
-  Grid,
-  ThemeProvider,
-} from "@mui/material";
+import { Box, createTheme, Grid, ThemeProvider } from "@mui/material";
 import DaoLeftPanel from "./components/dao/DaoLeftPanel";
 import TwitterLeftPanel from "./components/twitter/TwitterLeftPanel";
 
@@ -87,6 +76,7 @@ function DaoView() {
         topResults={[]}
         hyperParams={hyperParams}
         onUpdate={(params) => setHyperParams(params)}
+        onSelectTopResult={(n) => {}}
       />
       <DaoGraph hyperParams={hyperParams} />
     </React.Fragment>

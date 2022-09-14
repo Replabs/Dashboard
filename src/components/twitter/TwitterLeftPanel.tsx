@@ -13,9 +13,9 @@ import {
 } from "@mui/material";
 import "../SidePanel.css";
 import { TwitterHyperParams } from "../../App";
-import TwitterToggles from "./TwitterToggles";
 import { TwitterNode } from "./TwitterGraph";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import Toggles from "../Toggles";
 
 type Props = {
   topResults: TwitterNode[];
@@ -23,13 +23,6 @@ type Props = {
   onUpdate: (params: TwitterHyperParams) => void;
   onSelectTopResult: (result: TwitterNode) => void;
 };
-
-function capitalizeEachWord(str: string) {
-  return str
-    .split(" ")
-    .map((s) => s[0].toUpperCase() + s.substr(1))
-    .join(" ");
-}
 
 type ListInfo = {
   member_count: number;
@@ -111,9 +104,9 @@ function TwitterLeftPanel(props: Props) {
           >
             Parameters
           </Typography>
-          <TwitterToggles
+          <Toggles
             initialParams={props.hyperParams}
-            onUpdate={props.onUpdate}
+            onUpdate={(values) => props.onUpdate(values as TwitterHyperParams)}
           />
           <Divider />
           <Typography
