@@ -22,8 +22,10 @@ export type TweetData = {
 
 export type TwitterEdge = {
   id: string;
-  from: string;
   to: string;
+  from: string;
+  to_label: string;
+  from_label: string;
   tweets: TweetData[];
   value: number;
 };
@@ -105,6 +107,8 @@ function TwitterGraph(props: Props) {
 
     const body = await response.json();
 
+    let userIdToUsername: { [key: string]: string } = {};
+
     // Convert the nodes of the body into a DataSet.
     const nodes: TwitterNode[] = body.nodes
       .map((n: string) => JSON.parse(n))
@@ -113,6 +117,9 @@ function TwitterGraph(props: Props) {
           label: string;
           size: number;
         };
+
+        // Cache the username for the edges.
+        userIdToUsername[n[0] as string] = data.label;
 
         return {
           id: n[0],
@@ -138,6 +145,8 @@ function TwitterGraph(props: Props) {
           from: e[0],
           tweets: data.tweets,
           value: data.weight,
+          to_label: userIdToUsername[e[1] as string],
+          from_label: userIdToUsername[e[0] as string],
         } as TwitterEdge;
       });
 
