@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Node, Edge, Network, Options } from "vis-network/peer/esm/vis-network";
 import { DataSet } from "vis-data/peer/esm/vis-data";
 import { TwitterHyperParams } from "../../App";
-import { CircularProgress } from "@mui/material";
+import { Box, Button, CircularProgress, Grid } from "@mui/material";
 import TwitterSidePanel from "./TwitterSidePanel";
 import LoadingView from "../LoadingView";
 
@@ -76,12 +76,32 @@ const options: Options = {
   },
 };
 
+function EmptyView(props: {}) {
+  return (
+    <>
+      <Grid
+        container
+        justifyContent="center"
+        alignItems="center"
+        sx={{ height: "100%" }}
+      >
+        <Box sx={{ textAlign: "center" }}>
+          <h1>This list has not been crawled yet</h1>
+          <Button>Start Crawling</Button>
+        </Box>
+      </Grid>
+    </>
+  );
+}
+
 /**
  * The graph of the twitter list.
  */
 function TwitterGraph(props: Props) {
   const [network, setNetwork] = useState<Network | null>(null);
   const [data, setData] = useState<{
+    exists: boolean;
+    isBeingCrawled: boolean;
     nodes: DataSet<Node>;
     edges: DataSet<Edge>;
   } | null>(null);
@@ -106,6 +126,21 @@ function TwitterGraph(props: Props) {
     }
 
     const body = await response.json();
+
+    //
+    // Return early if the graph does not already exist.
+    //
+    if (!body.exists) {
+      setIsLoading(false);
+      setData({
+        exists: false,
+        isBeingCrawled: body.is_being_crawled,
+        nodes: new DataSet<Node>(),
+        edges: new DataSet<Edge>(),
+      });
+
+      return;
+    }
 
     let userIdToUsername: { [key: string]: string } = {};
 
@@ -153,6 +188,8 @@ function TwitterGraph(props: Props) {
     // Update the state.
     setIsLoading(false);
     setData({
+      exists: true,
+      isBeingCrawled: false,
       nodes: new DataSet<Node>(nodes),
       edges: new DataSet<Edge>(edges),
     });
@@ -196,23 +233,27 @@ function TwitterGraph(props: Props) {
 
   // Render the graph from the cached data when possible.
   useEffect(() => {
-    if (data && !isLoading) {
+    if (data?.exists && !isLoading) {
       render();
     }
   }, [data, isLoading]);
 
   // Return the div containing the graph data.
-  return isLoading ? (
-    <LoadingView />
-  ) : (
-    <React.Fragment>
-      <TwitterSidePanel
-        edges={selectedEdges ? selectedEdges : []}
-        hyperParams={props.hyperParams}
-      />
-      <div id="graph" />
-    </React.Fragment>
-  );
+  if (isLoading) {
+    return <LoadingView />;
+  } else if (!data?.exists) {
+    return <EmptyView />;
+  } else {
+    return (
+      <React.Fragment>
+        <TwitterSidePanel
+          edges={selectedEdges ? selectedEdges : []}
+          hyperParams={props.hyperParams}
+        />
+        <div id="graph" />
+      </React.Fragment>
+    );
+  }
 }
 
 export default TwitterGraph;

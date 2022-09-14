@@ -82,10 +82,6 @@ function EdgeHeader(props: { edge: TwitterEdge }) {
 function TwitterSidePanel(props: Props) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    setIsLoading(true);
-  }, [props.edges]);
-
   const list = () => {
     const tweetCount = props.edges
       .map((e) => e.tweets.length)

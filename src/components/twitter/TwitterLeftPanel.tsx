@@ -56,16 +56,17 @@ function SimpleDialog(props: SimpleDialogProps) {
 
 function TwitterLeftPanel(props: Props) {
   const [listInfo, setListInfo] = useState<ListInfo | null>(null);
+  const [hide, setHide] = useState<boolean>(false);
 
   async function fetchListInfo() {
     const response = await fetch(
       `http://127.0.0.1:5000/twitter_list/${props.hyperParams.list_id}`
     ).catch(() => {
-      return;
+      return setHide(true);
     });
 
     if (!response || !response.ok) {
-      return;
+      return setHide(true);
     }
 
     const body = await response.json();
@@ -80,85 +81,89 @@ function TwitterLeftPanel(props: Props) {
 
   return (
     <div className="Drawer-Container">
-      <Drawer elevation={2} anchor="left" variant="permanent">
-        <Box sx={{ width: 300 }} role="presentation">
-          <Typography
-            sx={{
-              margin: "20px 20px 0px 20px",
-              fontWeight: 800,
-            }}
-            variant="h4"
-          >
-            {listInfo?.name ? listInfo.name : ""}
-          </Typography>
-          <Typography
-            sx={{ marginLeft: "20px", marginBottom: "12px", color: "#666" }}
-            variant="h6"
-          >
-            {listInfo?.member_count ? `${listInfo.member_count} members` : ""}
-          </Typography>
-          <Divider sx={{ marginBottom: "12px" }} />
-          <Typography
-            sx={{ margin: "20px 20px 0px 20px", fontWeight: 500 }}
-            variant="h5"
-          >
-            Parameters
-          </Typography>
-          <Toggles
-            initialParams={props.hyperParams}
-            onUpdate={(values) => props.onUpdate(values as TwitterHyperParams)}
-          />
-          <Divider />
-          <Typography
-            sx={{ margin: "20px 20px 0px 20px", fontWeight: 500 }}
-            variant="h5"
-          >
-            Top Results
-          </Typography>
-          <List>
-            {props.topResults.map((node) => (
-              <ListItem key={node.id}>
-                <Button
-                  onClick={() => props.onSelectTopResult(node)}
-                  sx={{
-                    textTransform: "unset !important",
-                    textAlign: "left",
-                    width: "100%",
-                  }}
-                >
-                  <Stack
-                    direction="row"
-                    justifyContent="left"
-                    alignItems="center"
-                    spacing={1}
-                    sx={{ width: "100%" }}
+      {!hide && (
+        <Drawer elevation={2} anchor="left" variant="permanent">
+          <Box sx={{ width: 300 }} role="presentation">
+            <Typography
+              sx={{
+                margin: "20px 20px 0px 20px",
+                fontWeight: 800,
+              }}
+              variant="h4"
+            >
+              {listInfo?.name ? listInfo.name : ""}
+            </Typography>
+            <Typography
+              sx={{ marginLeft: "20px", marginBottom: "12px", color: "#666" }}
+              variant="h6"
+            >
+              {listInfo?.member_count ? `${listInfo.member_count} members` : ""}
+            </Typography>
+            <Divider sx={{ marginBottom: "12px" }} />
+            <Typography
+              sx={{ margin: "20px 20px 0px 20px", fontWeight: 500 }}
+              variant="h5"
+            >
+              Parameters
+            </Typography>
+            <Toggles
+              initialParams={props.hyperParams}
+              onUpdate={(values) =>
+                props.onUpdate(values as TwitterHyperParams)
+              }
+            />
+            <Divider />
+            <Typography
+              sx={{ margin: "20px 20px 0px 20px", fontWeight: 500 }}
+              variant="h5"
+            >
+              Top Results
+            </Typography>
+            <List>
+              {props.topResults.map((node) => (
+                <ListItem key={node.id}>
+                  <Button
+                    onClick={() => props.onSelectTopResult(node)}
+                    sx={{
+                      textTransform: "unset !important",
+                      textAlign: "left",
+                      width: "100%",
+                    }}
                   >
-                    <AccountCircleIcon sx={{ color: "#666" }} />
-                    <Stack>
-                      <Typography
-                        sx={{ color: "#666", lineHeight: 1.1 }}
-                        variant="h6"
-                      >
-                        {node.title}
-                      </Typography>
-                      <Typography
-                        sx={{
-                          marginTop: 0,
-                          paddingTop: 0,
-                          fontSize: "0.8rem",
-                          color: "#666",
-                        }}
-                      >
-                        PageRank: {(node.value / 1000).toFixed(5)}
-                      </Typography>
+                    <Stack
+                      direction="row"
+                      justifyContent="left"
+                      alignItems="center"
+                      spacing={1}
+                      sx={{ width: "100%" }}
+                    >
+                      <AccountCircleIcon sx={{ color: "#666" }} />
+                      <Stack>
+                        <Typography
+                          sx={{ color: "#666", lineHeight: 1.1 }}
+                          variant="h6"
+                        >
+                          {node.title}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            marginTop: 0,
+                            paddingTop: 0,
+                            fontSize: "0.8rem",
+                            color: "#666",
+                          }}
+                        >
+                          PageRank: {(node.value / 1000).toFixed(5)}
+                        </Typography>
+                      </Stack>
                     </Stack>
-                  </Stack>
-                </Button>
-              </ListItem>
-            ))}
-          </List>
-        </Box>
-      </Drawer>
+                  </Button>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        </Drawer>
+      )}
     </div>
   );
 }
