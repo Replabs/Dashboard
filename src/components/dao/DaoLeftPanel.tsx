@@ -12,10 +12,10 @@ import {
   Typography,
 } from "@mui/material";
 import "../SidePanel.css";
-import { DaoHyperParams } from "../../App";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
-import Toggles from "../Toggles";
+import ParameterToggles from "../ParameterToggles";
+import { DaoHyperParams } from "../../pages/DaoPage";
 
 type Props = {
   topResults: string[];
@@ -23,13 +23,6 @@ type Props = {
   onUpdate: (params: DaoHyperParams) => void;
   onSelectTopResult: (result: string) => void;
 };
-
-function capitalizeEachWord(str: string) {
-  return str
-    .split(" ")
-    .map((s) => s[0].toUpperCase() + s.substr(1))
-    .join(" ");
-}
 
 function DaoLeftPanel(props: Props) {
   return (
@@ -58,7 +51,7 @@ function DaoLeftPanel(props: Props) {
           >
             Parameters
           </Typography>
-          <Toggles
+          <ParameterToggles
             initialParams={props.hyperParams}
             onUpdate={(values) => props.onUpdate(values as DaoHyperParams)}
           />

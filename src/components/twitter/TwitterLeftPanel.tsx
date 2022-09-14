@@ -12,10 +12,10 @@ import {
   Typography,
 } from "@mui/material";
 import "../SidePanel.css";
-import { TwitterHyperParams } from "../../App";
-import { TwitterNode } from "./TwitterGraph";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import Toggles from "../Toggles";
+import ParameterToggles from "../ParameterToggles";
+import { TwitterHyperParams } from "../../pages/TwitterPage";
+import { TwitterNode } from "./types";
 
 type Props = {
   topResults: TwitterNode[];
@@ -79,6 +79,53 @@ function TwitterLeftPanel(props: Props) {
     }
   }, [listInfo]);
 
+  const topResults = () => {
+    return (
+      <List>
+        {props.topResults.map((node) => (
+          <ListItem key={node.id}>
+            <Button
+              onClick={() => props.onSelectTopResult(node)}
+              sx={{
+                textTransform: "unset !important",
+                textAlign: "left",
+                width: "100%",
+              }}
+            >
+              <Stack
+                direction="row"
+                justifyContent="left"
+                alignItems="center"
+                spacing={1}
+                sx={{ width: "100%" }}
+              >
+                <AccountCircleIcon sx={{ color: "#666" }} />
+                <Stack>
+                  <Typography
+                    sx={{ color: "#666", lineHeight: 1.1 }}
+                    variant="h6"
+                  >
+                    {node.title}
+                  </Typography>
+                  <Typography
+                    sx={{
+                      marginTop: 0,
+                      paddingTop: 0,
+                      fontSize: "0.8rem",
+                      color: "#666",
+                    }}
+                  >
+                    PageRank: {(node.value / 1000).toFixed(5)}
+                  </Typography>
+                </Stack>
+              </Stack>
+            </Button>
+          </ListItem>
+        ))}
+      </List>
+    );
+  };
+
   return (
     <div className="Drawer-Container">
       {!hide && (
@@ -106,7 +153,7 @@ function TwitterLeftPanel(props: Props) {
             >
               Parameters
             </Typography>
-            <Toggles
+            <ParameterToggles
               initialParams={props.hyperParams}
               onUpdate={(values) =>
                 props.onUpdate(values as TwitterHyperParams)
@@ -119,48 +166,7 @@ function TwitterLeftPanel(props: Props) {
             >
               Top Results
             </Typography>
-            <List>
-              {props.topResults.map((node) => (
-                <ListItem key={node.id}>
-                  <Button
-                    onClick={() => props.onSelectTopResult(node)}
-                    sx={{
-                      textTransform: "unset !important",
-                      textAlign: "left",
-                      width: "100%",
-                    }}
-                  >
-                    <Stack
-                      direction="row"
-                      justifyContent="left"
-                      alignItems="center"
-                      spacing={1}
-                      sx={{ width: "100%" }}
-                    >
-                      <AccountCircleIcon sx={{ color: "#666" }} />
-                      <Stack>
-                        <Typography
-                          sx={{ color: "#666", lineHeight: 1.1 }}
-                          variant="h6"
-                        >
-                          {node.title}
-                        </Typography>
-                        <Typography
-                          sx={{
-                            marginTop: 0,
-                            paddingTop: 0,
-                            fontSize: "0.8rem",
-                            color: "#666",
-                          }}
-                        >
-                          PageRank: {(node.value / 1000).toFixed(5)}
-                        </Typography>
-                      </Stack>
-                    </Stack>
-                  </Button>
-                </ListItem>
-              ))}
-            </List>
+            {topResults()}
           </Box>
         </Drawer>
       )}

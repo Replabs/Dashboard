@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Node, Edge, Network, Options } from "vis-network/peer/esm/vis-network";
 import { DataSet } from "vis-data/peer/esm/vis-data";
-import { TwitterHyperParams } from "../../App";
 import { Box, Button, CircularProgress, Grid, Typography } from "@mui/material";
 import TwitterSidePanel from "./TwitterSidePanel";
 import LoadingView from "../LoadingView";
+import { TwitterHyperParams } from "../../pages/TwitterPage";
+import { networkOptions } from "../../utils";
+import { TwitterNode, TwitterEdge, TweetData } from "./types";
 
 type Props = {
   hyperParams: TwitterHyperParams;
@@ -12,69 +14,25 @@ type Props = {
   setTopResults: (topResults: TwitterNode[]) => void;
 };
 
-export type TweetData = {
-  reply_tweet_id: string;
-  similarity: number;
-  sentiment: string;
-  weight: number;
-  url: string;
-};
-
-export type TwitterEdge = {
-  id: string;
-  to: string;
-  from: string;
-  to_label: string;
-  from_label: string;
-  tweets: TweetData[];
-  value: number;
-};
-
-export type TwitterNode = {
-  id: string;
-  label: string;
-  title: string;
-  value: number;
-};
-
-// The Network options.
-const options: Options = {
-  nodes: {
-    shape: "dot",
-  },
-  edges: {
-    color: {
-      inherit: true,
-    },
-    hoverWidth: 3.3,
-    physics: false,
-    scaling: {
-      min: 0,
-      max: 5,
-      label: {
-        drawThreshold: 1,
-      },
-    },
-    selfReference: {
-      angle: 0.7853981633974483,
-      renderBehindTheNode: false,
-    },
-    smooth: false,
-    arrows: {
-      to: {
-        enabled: true,
-      },
-    },
-  },
-  physics: {
-    hierarchicalRepulsion: {
-      centralGravity: 0,
-    },
-    maxVelocity: 30,
-    minVelocity: 0.35,
-    solver: "hierarchicalRepulsion",
-  },
-};
+function ErrorView() {
+  return (
+    <>
+      <Grid
+        container
+        justifyContent="center"
+        alignItems="center"
+        sx={{ height: "100%" }}
+      >
+        <Box sx={{ textAlign: "center" }}>
+          <h1 style={{ marginBottom: "8px" }}>Could not fetch list</h1>
+          <Typography sx={{ color: "#666", marginBottom: "32px" }}>
+            Please try again later.
+          </Typography>
+        </Box>
+      </Grid>
+    </>
+  );
+}
 
 function IsBeingCrawledView() {
   return (
@@ -139,23 +97,27 @@ function TwitterGraph(props: Props) {
     nodes: DataSet<Node>;
     edges: DataSet<Edge>;
   } | null>(null);
-  const [isLoading, setIsLoading] = useState<Boolean>(false);
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedEdges, setSelectedEdges] = useState<TwitterEdge[] | null>(
     null
   );
 
   const fetchData = async () => {
     setIsLoading(true);
+    setIsError(false);
 
     const response = await fetch(
       `http://127.0.0.1:5000/twitter_graph/${props.hyperParams.list_id}/${props.hyperParams.topic}?alpha=${props.hyperParams.alpha}&sentiment_weight=${props.hyperParams.sentiment_weight}&similarity_threshold=${props.hyperParams.similarity_threshold}`
     ).catch(() => {
       alert("Failed to fetch Twitter graph");
       setIsLoading(false);
+      setIsError(true);
     });
 
     if (!response || !response.ok) {
       alert("Failed to fetch graph");
+      setIsError(true);
       return setIsLoading(false);
     }
 
@@ -234,7 +196,7 @@ function TwitterGraph(props: Props) {
 
   const render = () => {
     const container = document.getElementById("graph");
-    const network = new Network(container!!, data!!, options);
+    const network = new Network(container!!, data!!, networkOptions);
 
     network.on("selectEdge", (selected: { edges: string[] }) => {
       const edges = selected.edges.map(
@@ -273,12 +235,14 @@ function TwitterGraph(props: Props) {
   }, [data, isLoading]);
 
   // Return the div containing the graph data.
-  if (isLoading) {
+  if (isError) {
+    return <ErrorView />;
+  } else if (isLoading) {
     return <LoadingView />;
-  } else if (!data?.exists) {
-    return data?.isBeingCrawled ? (
-      <IsBeingCrawledView />
-    ) : (
+  } else if (data && !data.exists && data.isBeingCrawled) {
+    return <IsBeingCrawledView />;
+  } else if (data && !data.exists && !data.isBeingCrawled) {
+    return (
       <NeedsCrawlingView
         list_id={props.hyperParams.list_id}
         onStartCrawling={() => setData({ ...data!!, isBeingCrawled: true })}

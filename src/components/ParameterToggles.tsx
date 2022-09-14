@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { Box, Button, IconButton, TextField } from "@mui/material";
 import Stack from "@mui/material/Stack";
-import "./Toggles.css";
+import "./ParameterToggles.css";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
 type HyperParameters = {
@@ -46,7 +46,7 @@ function Field(props: FieldProps) {
   );
 }
 
-function Toggles(props: Props) {
+function ParameterToggles(props: Props) {
   const [hyperParams, setHyperParams] = useState<HyperParameters>(
     props.initialParams
   );
@@ -122,4 +122,4 @@ function Toggles(props: Props) {
   );
 }
 
-export default Toggles;
+export default ParameterToggles;

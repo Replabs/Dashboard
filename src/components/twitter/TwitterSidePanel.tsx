@@ -3,13 +3,13 @@ import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import { TweetData, TwitterEdge } from "./TwitterGraph";
 import { Tweet } from "react-twitter-widgets";
 import LoadingView from "../LoadingView";
 import "../SidePanel.css";
 import { Divider, Typography } from "@mui/material";
-import { TwitterHyperParams } from "../../App";
 import { Stack } from "@mui/system";
+import { TwitterHyperParams } from "../../pages/TwitterPage";
+import { TwitterEdge, TweetData } from "./types";
 
 type Props = {
   edges: TwitterEdge[];
@@ -83,10 +83,6 @@ function TwitterSidePanel(props: Props) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const list = () => {
-    const tweetCount = props.edges
-      .map((e) => e.tweets.length)
-      .reduce((a, b) => a + b, 0);
-
     return (
       <Box sx={{ width: 432 }} role="presentation">
         {isLoading && <LoadingView />}

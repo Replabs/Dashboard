@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Node, Edge, Network, Options } from "vis-network/peer/esm/vis-network";
+import { Node, Edge, Network } from "vis-network/peer/esm/vis-network";
 import { DataSet } from "vis-data/peer/esm/vis-data";
-import { DaoHyperParams } from "../../App";
-import { CircularProgress } from "@mui/material";
 import EdgePanel from "./EdgePanel";
 import LoadingView from "../LoadingView";
+import { DaoHyperParams } from "../../pages/DaoPage";
+import { networkOptions } from "../../utils";
 
 type Props = {
   hyperParams: DaoHyperParams;
@@ -16,45 +16,6 @@ export type EdgeData = {
   to: string;
   texts: string[];
   value: number;
-};
-
-// The Network options.
-const options: Options = {
-  nodes: {
-    shape: "dot",
-  },
-  edges: {
-    color: {
-      inherit: true,
-    },
-    hoverWidth: 3.3,
-    physics: false,
-    scaling: {
-      min: 0,
-      max: 5,
-      label: {
-        drawThreshold: 1,
-      },
-    },
-    selfReference: {
-      angle: 0.7853981633974483,
-      renderBehindTheNode: false,
-    },
-    smooth: false,
-    arrows: {
-      to: {
-        enabled: true,
-      },
-    },
-  },
-  physics: {
-    hierarchicalRepulsion: {
-      centralGravity: 0,
-    },
-    maxVelocity: 30,
-    minVelocity: 0.35,
-    solver: "hierarchicalRepulsion",
-  },
 };
 
 /**
@@ -128,7 +89,7 @@ function DaoGraph(props: Props) {
 
   const render = () => {
     const container = document.getElementById("graph");
-    const network = new Network(container!!, data!!, options);
+    const network = new Network(container!!, data!!, networkOptions);
 
     network.on("selectEdge", (selected: { edges: string[] }) => {
       const edges = selected.edges.map((e) => data!!.edges.get(e) as EdgeData);
