@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Node, Edge, Network, Options } from "vis-network/peer/esm/vis-network";
 import { DataSet } from "vis-data/peer/esm/vis-data";
 import { TwitterHyperParams } from "../../App";
-import { Box, Button, CircularProgress, Grid } from "@mui/material";
+import { Box, Button, CircularProgress, Grid, Typography } from "@mui/material";
 import TwitterSidePanel from "./TwitterSidePanel";
 import LoadingView from "../LoadingView";
 
@@ -76,7 +76,41 @@ const options: Options = {
   },
 };
 
-function EmptyView(props: {}) {
+function IsBeingCrawledView() {
+  return (
+    <>
+      <Grid
+        container
+        justifyContent="center"
+        alignItems="center"
+        sx={{ height: "100%" }}
+      >
+        <Box sx={{ textAlign: "center" }}>
+          <h1 style={{ marginBottom: "8px" }}>This list is being crawled</h1>
+          <Typography sx={{ color: "#666", marginBottom: "32px" }}>
+            This can take several hours. Please come back later.
+          </Typography>
+          <CircularProgress />
+        </Box>
+      </Grid>
+    </>
+  );
+}
+
+function NeedsCrawlingView(props: {
+  list_id: string;
+  onStartCrawling: () => void;
+}) {
+  const crawl = async () => {
+    props.onStartCrawling();
+
+    fetch(`http://127.0.0.1:5000/twitter_list/${props.list_id}`, {
+      method: "POST",
+    }).catch(() => {
+      console.error("Failed to crawl twitter list.");
+    });
+  };
+
   return (
     <>
       <Grid
@@ -87,7 +121,7 @@ function EmptyView(props: {}) {
       >
         <Box sx={{ textAlign: "center" }}>
           <h1>This list has not been crawled yet</h1>
-          <Button>Start Crawling</Button>
+          <Button onClick={() => crawl()}>Start Crawling</Button>
         </Box>
       </Grid>
     </>
@@ -242,7 +276,14 @@ function TwitterGraph(props: Props) {
   if (isLoading) {
     return <LoadingView />;
   } else if (!data?.exists) {
-    return <EmptyView />;
+    return data?.isBeingCrawled ? (
+      <IsBeingCrawledView />
+    ) : (
+      <NeedsCrawlingView
+        list_id={props.hyperParams.list_id}
+        onStartCrawling={() => setData({ ...data!!, isBeingCrawled: true })}
+      />
+    );
   } else {
     return (
       <React.Fragment>
