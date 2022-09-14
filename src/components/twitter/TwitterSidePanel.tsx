@@ -82,45 +82,27 @@ function EdgeHeader(props: { edge: TwitterEdge }) {
 function TwitterSidePanel(props: Props) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const list = () => {
+  const tweet = (tweet: TweetData) => {
     return (
-      <Box sx={{ width: 432 }} role="presentation">
-        {isLoading && <LoadingView />}
-        <List>
-          {props.edges.map((edge) => (
-            <>
-              <ListItem>
-                <EdgeHeader edge={edge} />
-              </ListItem>
-              <Divider />
-              {edge.tweets.map((tweet) => (
-                <>
-                  <ListItem
-                    key={tweet.reply_tweet_id}
-                    sx={{ paddingBottom: "0px" }}
-                  >
-                    <Tweet
-                      tweetId={tweet.reply_tweet_id}
-                      options={{ maxwidth: 400 }}
-                      onLoad={() => {
-                        setIsLoading(false);
-                      }}
-                    />
-                  </ListItem>
-                  <ListItem sx={{ paddingTop: "0px" }}>
-                    <TwitterStats
-                      key={`${tweet.reply_tweet_id}-stats`}
-                      tweet={tweet}
-                      hyperParams={props.hyperParams}
-                    />
-                  </ListItem>
-                  <Divider />
-                </>
-              ))}
-            </>
-          ))}
-        </List>
-      </Box>
+      <>
+        <ListItem key={tweet.reply_tweet_id} sx={{ paddingBottom: "0px" }}>
+          <Tweet
+            tweetId={tweet.reply_tweet_id}
+            options={{ maxwidth: 400 }}
+            onLoad={() => {
+              setIsLoading(false);
+            }}
+          />
+        </ListItem>
+        <ListItem sx={{ paddingTop: "0px" }}>
+          <TwitterStats
+            key={`${tweet.reply_tweet_id}-stats`}
+            tweet={tweet}
+            hyperParams={props.hyperParams}
+          />
+        </ListItem>
+        <Divider />
+      </>
     );
   };
 
@@ -132,7 +114,20 @@ function TwitterSidePanel(props: Props) {
         open={props.edges.length > 0}
         variant="persistent"
       >
-        {list()}
+        <Box sx={{ width: 432 }} role="presentation">
+          {isLoading && <LoadingView />}
+          <List>
+            {props.edges.map((edge) => (
+              <>
+                <ListItem>
+                  <EdgeHeader edge={edge} />
+                </ListItem>
+                <Divider />
+                {edge.tweets.map((t) => tweet(t))}
+              </>
+            ))}
+          </List>
+        </Box>
       </Drawer>
     </div>
   );
