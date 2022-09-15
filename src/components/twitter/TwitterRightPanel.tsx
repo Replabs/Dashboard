@@ -6,10 +6,11 @@ import ListItem from "@mui/material/ListItem";
 import { Tweet } from "react-twitter-widgets";
 import LoadingView from "../LoadingView";
 import "../SidePanel.css";
-import { Divider, Typography } from "@mui/material";
+import { Divider, IconButton, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { TwitterHyperParams } from "../../pages/TwitterPage";
 import { TwitterEdge, TweetData } from "./types";
+import CloseIcon from "@mui/icons-material/Close";
 
 type Props = {
   edges: TwitterEdge[];
@@ -81,6 +82,11 @@ function EdgeHeader(props: { edge: TwitterEdge }) {
 
 function TwitterRightPanel(props: Props) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    setIsOpen(props.edges.length > 0);
+  }, [props.edges]);
 
   const tweet = (tweet: TweetData) => {
     return (
@@ -106,15 +112,30 @@ function TwitterRightPanel(props: Props) {
     );
   };
 
+  const closeButton = () => {
+    return (
+      <Stack direction="row" alignItems="end" justifyContent="right">
+        <IconButton
+          aria-label="close"
+          onClick={() => {
+            setIsOpen(false);
+          }}
+          sx={{
+            margin: "8px",
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </Stack>
+    );
+  };
+
   return (
     <div className="Drawer-Container">
-      <Drawer
-        elevation={2}
-        anchor="right"
-        open={props.edges.length > 0}
-        variant="persistent"
-      >
+      <Drawer elevation={2} anchor="right" open={isOpen} variant="persistent">
         <Box sx={{ width: 432 }} role="presentation">
+          {closeButton()}
           {isLoading && <LoadingView />}
           <List>
             {props.edges.map((edge) => (

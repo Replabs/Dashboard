@@ -3,9 +3,10 @@ import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import { Divider, Stack, Typography } from "@mui/material";
+import { Divider, IconButton, Stack, Typography } from "@mui/material";
 import "../SidePanel.css";
 import { AssessmentData, DaoEdge } from "./types";
+import CloseIcon from "@mui/icons-material/Close";
 import { DaoHyperParams } from "../../pages/DaoPage";
 
 type Props = {
@@ -62,19 +63,40 @@ function EdgeHeader(props: { edge: DaoEdge }) {
 }
 
 function DaoRightPanel(props: Props) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    setIsOpen(props.edges.length > 0);
+  }, [props.edges]);
+
+  const closeButton = () => {
+    return (
+      <Stack direction="row" alignItems="end" justifyContent="right">
+        <IconButton
+          aria-label="close"
+          onClick={() => {
+            setIsOpen(false);
+          }}
+          sx={{
+            margin: "8px",
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </Stack>
+    );
+  };
+
   return (
     <div className="Drawer-Container">
-      <Drawer
-        elevation={2}
-        anchor="right"
-        open={props.edges.length > 0}
-        variant="persistent"
-      >
+      <Drawer elevation={2} anchor="right" open={isOpen} variant="persistent">
         <Box sx={{ width: 432 }} role="presentation">
+          {closeButton()}
           <List>
             {props.edges.map((edge) => (
               <>
-                <ListItem>
+                <ListItem key={edge.id}>
                   <EdgeHeader edge={edge} />
                 </ListItem>
                 <Divider />
@@ -85,7 +107,10 @@ function DaoRightPanel(props: Props) {
                         {`"[...] ${a.text}"`}
                       </Typography>
                     </ListItem>
-                    <ListItem sx={{ paddingTop: "0px" }}>
+                    <ListItem
+                      key={`${edge.id}-stats`}
+                      sx={{ paddingTop: "0px" }}
+                    >
                       <AssessmentStats
                         key={`${a.text}-stats`}
                         assessment={a}

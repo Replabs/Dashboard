@@ -3,6 +3,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  ListItem,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
@@ -32,17 +33,17 @@ function Popup(props: { config: PopupConfig }) {
     >
       <DialogTitle id="alert-dialog-title">{props.config.title}</DialogTitle>
       <DialogContent>
-        {props.config.content
-          .split("\n")
-          .map((line, i) =>
-            line == "" ? (
+        {props.config.content.split("\n").map((line, i) =>
+          line == "" ? (
+            <ListItem key={i}>
               <br />
-            ) : (
-              <DialogContentText id={`alert-dialog-description-${i}`}>
-                {line}
-              </DialogContentText>
-            )
-          )}
+            </ListItem>
+          ) : (
+            <DialogContentText key={i} id={`alert-dialog-description-${i}`}>
+              {line}
+            </DialogContentText>
+          )
+        )}
       </DialogContent>
     </Dialog>
   );
