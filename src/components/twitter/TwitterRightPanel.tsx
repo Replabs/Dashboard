@@ -86,6 +86,7 @@ function TwitterRightPanel(props: Props) {
 
   useEffect(() => {
     setIsOpen(props.edges.length > 0);
+    setIsLoading(true);
   }, [props.edges]);
 
   const tweet = (tweet: TweetData) => {

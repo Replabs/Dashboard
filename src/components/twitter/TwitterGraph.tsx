@@ -58,6 +58,7 @@ function IsBeingCrawledView() {
 function NeedsCrawlingView(props: {
   list_id: string;
   onStartCrawling: () => void;
+  onErrorCrawling: () => void;
 }) {
   const crawl = async () => {
     props.onStartCrawling();
@@ -65,7 +66,7 @@ function NeedsCrawlingView(props: {
     fetch(`${baseUrl()}/twitter_list/${props.list_id}`, {
       method: "POST",
     }).catch(() => {
-      console.error("Failed to crawl twitter list.");
+      props.onErrorCrawling();
     });
   };
 
@@ -250,6 +251,10 @@ function TwitterGraph(props: Props) {
       <NeedsCrawlingView
         list_id={props.hyperParams.list_id}
         onStartCrawling={() => setData({ ...data!!, isBeingCrawled: true })}
+        onErrorCrawling={() => {
+          setData({ ...data!!, isBeingCrawled: false });
+          setIsError(true);
+        }}
       />
     );
   } else {
