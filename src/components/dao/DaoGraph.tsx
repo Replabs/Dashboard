@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Node, Edge, Network } from "vis-network/peer/esm/vis-network";
 import { DataSet } from "vis-data/peer/esm/vis-data";
-import EdgePanel from "./EdgePanel";
+import DaoRightPanel from "./DaoRightPanel";
 import LoadingView from "../LoadingView";
 import { DaoHyperParams } from "../../pages/DaoPage";
 import { baseUrl, networkOptions } from "../../utils";
 import { Box, Button, Grid, Typography } from "@mui/material";
-import { DaoEdge, DaoNode } from "./types";
+import { AssessmentData, DaoEdge, DaoNode } from "./types";
 
 type Props = {
   hyperParams: DaoHyperParams;
@@ -134,7 +134,7 @@ function DaoGraph(props: Props) {
         const id = `${e[0]}${e[1]}`;
         const data = e[2] as {
           weight: number;
-          texts: string[];
+          assessments: AssessmentData[];
         };
 
         return {
@@ -142,7 +142,7 @@ function DaoGraph(props: Props) {
           to: e[1],
           from: e[0],
           value: data.weight,
-          texts: data.texts,
+          assessments: data.assessments,
         } as DaoEdge;
       });
 
@@ -205,7 +205,10 @@ function DaoGraph(props: Props) {
   } else {
     return (
       <React.Fragment>
-        <EdgePanel edges={selectedEdges ? selectedEdges : []} />
+        <DaoRightPanel
+          edges={selectedEdges ? selectedEdges : []}
+          hyperParams={props.hyperParams}
+        />
         <div id="graph" />
       </React.Fragment>
     );

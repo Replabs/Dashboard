@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Node, Edge, Network, Options } from "vis-network/peer/esm/vis-network";
 import { DataSet } from "vis-data/peer/esm/vis-data";
 import { Box, Button, CircularProgress, Grid, Typography } from "@mui/material";
-import TwitterSidePanel from "./TwitterSidePanel";
+import TwitterRightPanel from "./TwitterRightPanel";
 import LoadingView from "../LoadingView";
 import { TwitterHyperParams } from "../../pages/TwitterPage";
 import { baseUrl, networkOptions } from "../../utils";
@@ -255,7 +255,7 @@ function TwitterGraph(props: Props) {
   } else {
     return (
       <React.Fragment>
-        <TwitterSidePanel
+        <TwitterRightPanel
           edges={selectedEdges ? selectedEdges : []}
           hyperParams={props.hyperParams}
         />

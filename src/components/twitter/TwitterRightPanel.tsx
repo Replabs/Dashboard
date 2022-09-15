@@ -79,7 +79,7 @@ function EdgeHeader(props: { edge: TwitterEdge }) {
   );
 }
 
-function TwitterSidePanel(props: Props) {
+function TwitterRightPanel(props: Props) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const tweet = (tweet: TweetData) => {
@@ -133,4 +133,4 @@ function TwitterSidePanel(props: Props) {
   );
 }
 
-export default TwitterSidePanel;
+export default TwitterRightPanel;
