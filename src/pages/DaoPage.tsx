@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import DaoGraph from "../components/dao/DaoGraph";
 import DaoLeftPanel from "../components/dao/DaoLeftPanel";
+import { DaoNode } from "../components/dao/types";
 
 export type DaoHyperParams = {
   name: string;
@@ -19,16 +20,24 @@ function DaoPage() {
     alpha: 0.65,
     similarity_threshold: 0.6,
   });
+  const [topResults, setTopResults] = useState<DaoNode[]>([]);
+  const [selectedTopResult, setSelectedTopResult] = useState<DaoNode | null>(
+    null
+  );
 
   return (
     <React.Fragment>
       <DaoLeftPanel
-        topResults={[]}
+        topResults={topResults}
         hyperParams={hyperParams}
         onUpdate={(params) => setHyperParams(params)}
-        onSelectTopResult={(n) => {}}
+        onSelectTopResult={(node) => setSelectedTopResult(node)}
       />
-      <DaoGraph hyperParams={hyperParams} />
+      <DaoGraph
+        hyperParams={hyperParams}
+        selectedTopResult={selectedTopResult}
+        setTopResults={(nodes) => setTopResults(nodes)}
+      />
     </React.Fragment>
   );
 }

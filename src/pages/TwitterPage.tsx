@@ -40,7 +40,7 @@ function TwitterPage() {
       <TwitterGraph
         hyperParams={hyperParams}
         selectedTopResult={selectedTopResult}
-        setTopResults={setTopResults}
+        setTopResults={(nodes) => setTopResults(nodes)}
       />
     </React.Fragment>
   );

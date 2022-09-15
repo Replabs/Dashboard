@@ -9,12 +9,13 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ParameterToggles from "../ParameterToggles";
 import { DaoHyperParams } from "../../pages/DaoPage";
 import { baseUrl } from "../../utils";
+import { DaoNode } from "./types";
 
 type Props = {
-  topResults: string[];
+  topResults: DaoNode[];
   hyperParams: DaoHyperParams;
   onUpdate: (params: DaoHyperParams) => void;
-  onSelectTopResult: (result: string) => void;
+  onSelectTopResult: (result: DaoNode) => void;
 };
 
 type DaoInfo = {
@@ -54,6 +55,53 @@ function DaoLeftPanel(props: Props) {
     }
   }, [daoInfo]);
 
+  const topResults = () => {
+    return (
+      <List>
+        {props.topResults.map((node) => (
+          <ListItem key={node.id}>
+            <Button
+              onClick={() => props.onSelectTopResult(node)}
+              sx={{
+                textTransform: "unset !important",
+                textAlign: "left",
+                width: "100%",
+              }}
+            >
+              <Stack
+                direction="row"
+                justifyContent="left"
+                alignItems="center"
+                spacing={1}
+                sx={{ width: "100%" }}
+              >
+                <AccountCircleIcon sx={{ color: "#666" }} />
+                <Stack>
+                  <Typography
+                    sx={{ color: "#666", lineHeight: 1.1 }}
+                    variant="h6"
+                  >
+                    {node.title}
+                  </Typography>
+                  <Typography
+                    sx={{
+                      marginTop: 0,
+                      paddingTop: 0,
+                      fontSize: "0.8rem",
+                      color: "#666",
+                    }}
+                  >
+                    PageRank: {(node.value / 1000).toFixed(5)}
+                  </Typography>
+                </Stack>
+              </Stack>
+            </Button>
+          </ListItem>
+        ))}
+      </List>
+    );
+  };
+
   return (
     <div className="Drawer-Container">
       {!error && (
@@ -92,49 +140,7 @@ function DaoLeftPanel(props: Props) {
             >
               Top Results
             </Typography>
-            <List>
-              {props.topResults.map((result) => (
-                <ListItem key={result}>
-                  <Button
-                    onClick={() => props.onSelectTopResult(result)}
-                    sx={{
-                      textTransform: "unset !important",
-                      textAlign: "left",
-                      width: "100%",
-                    }}
-                  >
-                    <Stack
-                      direction="row"
-                      justifyContent="left"
-                      alignItems="center"
-                      spacing={1}
-                      sx={{ width: "100%" }}
-                    >
-                      <AccountCircleIcon sx={{ color: "#666" }} />
-                      <Stack>
-                        <Typography
-                          sx={{ color: "#666", lineHeight: 1.1 }}
-                          variant="h6"
-                        >
-                          {result}
-                        </Typography>
-                        <Typography
-                          sx={{
-                            marginTop: 0,
-                            paddingTop: 0,
-                            fontSize: "0.8rem",
-                            color: "#666",
-                          }}
-                        >
-                          PageRank: 0.2
-                          {/* PageRank: {(node.value / 1000).toFixed(5)} */}
-                        </Typography>
-                      </Stack>
-                    </Stack>
-                  </Button>
-                </ListItem>
-              ))}
-            </List>
+            {topResults()}
           </Box>
         </Drawer>
       )}

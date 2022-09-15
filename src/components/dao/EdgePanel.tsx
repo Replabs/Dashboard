@@ -5,10 +5,10 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import { Typography } from "@mui/material";
 import "../SidePanel.css";
-import { EdgeData } from "./DaoGraph";
+import { DaoEdge } from "./types";
 
 type Props = {
-  edges: EdgeData[];
+  edges: DaoEdge[];
 };
 
 function EdgePanel(props: Props) {
