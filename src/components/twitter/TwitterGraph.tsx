@@ -5,7 +5,7 @@ import { Box, Button, CircularProgress, Grid, Typography } from "@mui/material";
 import TwitterSidePanel from "./TwitterSidePanel";
 import LoadingView from "../LoadingView";
 import { TwitterHyperParams } from "../../pages/TwitterPage";
-import { networkOptions } from "../../utils";
+import { baseUrl, networkOptions } from "../../utils";
 import { TwitterNode, TwitterEdge, TweetData } from "./types";
 
 type Props = {
@@ -62,7 +62,7 @@ function NeedsCrawlingView(props: {
   const crawl = async () => {
     props.onStartCrawling();
 
-    fetch(`http://127.0.0.1:5000/twitter_list/${props.list_id}`, {
+    fetch(`${baseUrl()}/twitter_list/${props.list_id}`, {
       method: "POST",
     }).catch(() => {
       console.error("Failed to crawl twitter list.");
@@ -108,17 +108,21 @@ function TwitterGraph(props: Props) {
     setIsError(false);
 
     const response = await fetch(
-      `http://127.0.0.1:5000/twitter_graph/${props.hyperParams.list_id}/${props.hyperParams.topic}?alpha=${props.hyperParams.alpha}&sentiment_weight=${props.hyperParams.sentiment_weight}&similarity_threshold=${props.hyperParams.similarity_threshold}`
+      `${baseUrl()}/twitter_graph/${props.hyperParams.list_id}/${
+        props.hyperParams.topic
+      }?alpha=${props.hyperParams.alpha}&sentiment_weight=${
+        props.hyperParams.sentiment_weight
+      }&similarity_threshold=${props.hyperParams.similarity_threshold}`
     ).catch(() => {
-      alert("Failed to fetch Twitter graph");
       setIsLoading(false);
       setIsError(true);
+      return;
     });
 
     if (!response || !response.ok) {
-      alert("Failed to fetch graph");
+      setIsLoading(false);
       setIsError(true);
-      return setIsLoading(false);
+      return;
     }
 
     const body = await response.json();

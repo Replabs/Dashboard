@@ -1,6 +1,17 @@
 import { Options } from "vis-network";
 
 /**
+ * The base URL for the API.
+ */
+export function baseUrl() {
+  if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
+    return "http://127.0.0.1:5000";
+  } else {
+    return "" // TODO: set production url
+  }
+};
+
+/**
  * The options for the Vis.js network.
  */
 export const networkOptions: Options = {

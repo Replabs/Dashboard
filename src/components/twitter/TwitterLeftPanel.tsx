@@ -3,19 +3,13 @@ import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  Divider,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Button, Divider, Stack, Typography } from "@mui/material";
 import "../SidePanel.css";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ParameterToggles from "../ParameterToggles";
 import { TwitterHyperParams } from "../../pages/TwitterPage";
 import { TwitterNode } from "./types";
+import { baseUrl } from "../../utils";
 
 type Props = {
   topResults: TwitterNode[];
@@ -29,38 +23,13 @@ type ListInfo = {
   name: string;
 };
 
-type SimpleDialogProps = {
-  open: boolean;
-  selectedValue: string;
-  onClose: (value: string) => void;
-};
-
-function SimpleDialog(props: SimpleDialogProps) {
-  const { onClose, selectedValue, open } = props;
-
-  const handleClose = () => {
-    onClose(selectedValue);
-  };
-
-  const handleListItemClick = (value: string) => {
-    onClose(value);
-  };
-
-  return (
-    <Dialog onClose={handleClose} open={open}>
-      <DialogTitle>What's this?</DialogTitle>
-      <Typography></Typography>
-    </Dialog>
-  );
-}
-
 function TwitterLeftPanel(props: Props) {
   const [listInfo, setListInfo] = useState<ListInfo | null>(null);
   const [hide, setHide] = useState<boolean>(false);
 
   async function fetchListInfo() {
     const response = await fetch(
-      `http://127.0.0.1:5000/twitter_list/${props.hyperParams.list_id}`
+      `${baseUrl()}/twitter_list/${props.hyperParams.list_id}`
     ).catch(() => {
       return setHide(true);
     });

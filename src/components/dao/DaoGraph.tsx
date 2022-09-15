@@ -4,7 +4,8 @@ import { DataSet } from "vis-data/peer/esm/vis-data";
 import EdgePanel from "./EdgePanel";
 import LoadingView from "../LoadingView";
 import { DaoHyperParams } from "../../pages/DaoPage";
-import { networkOptions } from "../../utils";
+import { baseUrl, networkOptions } from "../../utils";
+import { Box, Button, Grid, Link, Typography } from "@mui/material";
 
 type Props = {
   hyperParams: DaoHyperParams;
@@ -18,6 +19,56 @@ export type EdgeData = {
   value: number;
 };
 
+function ErrorView() {
+  return (
+    <>
+      <Grid
+        container
+        justifyContent="center"
+        alignItems="center"
+        sx={{ height: "100%" }}
+      >
+        <Box sx={{ textAlign: "center" }}>
+          <h1 style={{ marginBottom: "8px" }}>Could not fetch DAO data</h1>
+          <Typography sx={{ color: "#666", marginBottom: "32px" }}>
+            Please try again later.
+          </Typography>
+        </Box>
+      </Grid>
+    </>
+  );
+}
+
+function NotConfiguredView(props: { name: string }) {
+  return (
+    <>
+      <Grid
+        container
+        justifyContent="center"
+        alignItems="center"
+        sx={{ height: "100%" }}
+      >
+        <Box sx={{ textAlign: "center" }}>
+          <h1 style={{ marginBottom: "8px" }}>DAO not yet configured</h1>
+          <Typography
+            sx={{ color: "#666", marginBottom: "32px", maxWidth: "600px" }}
+          >
+            Replabs uses attestations from a Discord plugin to determine
+            reputation in DAOs. This requires some configuration.
+          </Typography>
+          <Button
+            onClick={() =>
+              (document.location = `mailto:hello@replabs.xyz?subject=Replabs for ${props.name}`)
+            }
+          >
+            CONFIGURE DAO
+          </Button>
+        </Box>
+      </Grid>
+    </>
+  );
+}
+
 /**
  * The graph of the twitter list.
  */
@@ -26,6 +77,8 @@ function DaoGraph(props: Props) {
     nodes: DataSet<Node>;
     edges: DataSet<Edge>;
   } | null>(null);
+  const [exists, setExists] = useState(true);
+  const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState<Boolean>(false);
   const [selectedEdges, setSelectedEdges] = useState<EdgeData[] | null>(null);
 
@@ -33,15 +86,33 @@ function DaoGraph(props: Props) {
     setIsLoading(true);
 
     const response = await fetch(
-      `http://127.0.0.1:5000/dao_graph/${props.hyperParams.name}/${props.hyperParams.topic}?alpha=${props.hyperParams.alpha}&similarity_threshold=${props.hyperParams.similarity_threshold}`
-    );
+      `${baseUrl()}/dao_graph/${props.hyperParams.name}/${
+        props.hyperParams.topic
+      }?alpha=${props.hyperParams.alpha}&similarity_threshold=${
+        props.hyperParams.similarity_threshold
+      }`
+    ).catch(() => {
+      setIsLoading(false);
+      setIsError(true);
+      return;
+    });
 
-    if (!response.ok) {
-      alert("Failed to fetch graph");
-      return setIsLoading(false);
+    if (!response || !response.ok) {
+      setIsLoading(false);
+      setIsError(true);
+      return;
     }
 
     const body = await response.json();
+
+    //
+    // Return early if the graph does not already exist.
+    //
+    if (!body.exists) {
+      setIsLoading(false);
+      setExists(false);
+      return;
+    }
 
     // Convert the nodes of the body into a DataSet.
     const nodes = new DataSet<Node>(
@@ -110,14 +181,20 @@ function DaoGraph(props: Props) {
   }, [data, isLoading]);
 
   // Return the div containing the graph data.
-  return isLoading ? (
-    <LoadingView />
-  ) : (
-    <React.Fragment>
-      <EdgePanel edges={selectedEdges ? selectedEdges : []} />
-      <div id="graph" />
-    </React.Fragment>
-  );
+  if (isError) {
+    return <ErrorView />;
+  } else if (isLoading) {
+    return <LoadingView />;
+  } else if (!exists) {
+    return <NotConfiguredView name={props.hyperParams.name} />;
+  } else {
+    return (
+      <React.Fragment>
+        <EdgePanel edges={selectedEdges ? selectedEdges : []} />
+        <div id="graph" />
+      </React.Fragment>
+    );
+  }
 }
 
 export default DaoGraph;
