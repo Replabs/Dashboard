@@ -22,6 +22,13 @@ type DaoInfo = {
   name: string;
 };
 
+function uppercaseFirsLetters(str: string) {
+  return str
+    .split(" ")
+    .map((word) => word[0].toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 function DaoLeftPanel(props: Props) {
   const [daoInfo, setDaoInfo] = useState<DaoInfo | null>(null);
   const [error, setError] = useState(false);
@@ -59,13 +66,13 @@ function DaoLeftPanel(props: Props) {
               }}
               variant="h4"
             >
-              {props.hyperParams.name}
+              {uppercaseFirsLetters(props.hyperParams.name)}
             </Typography>
             <Typography
               sx={{ marginLeft: "20px", marginBottom: "12px", color: "#666" }}
               variant="h6"
             >
-              100 members
+              {daoInfo?.member_count ? `${daoInfo.member_count} members` : ""}
             </Typography>
             <Divider sx={{ marginBottom: "12px" }} />
             <Typography

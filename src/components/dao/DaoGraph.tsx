@@ -5,7 +5,7 @@ import EdgePanel from "./EdgePanel";
 import LoadingView from "../LoadingView";
 import { DaoHyperParams } from "../../pages/DaoPage";
 import { baseUrl, networkOptions } from "../../utils";
-import { Box, Button, Grid, Link, Typography } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 
 type Props = {
   hyperParams: DaoHyperParams;
@@ -108,7 +108,7 @@ function DaoGraph(props: Props) {
     //
     // Return early if the graph does not already exist.
     //
-    if (!body.exists) {
+    if (!body.nodes || !body.edges) {
       setIsLoading(false);
       setExists(false);
       return;
