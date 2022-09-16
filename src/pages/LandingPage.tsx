@@ -1,21 +1,11 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "../App.css";
-import {
-  Box,
-  Button,
-  Grid,
-  InputAdornment,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Grid, Stack, TextField, Typography } from "@mui/material";
 
 function ListForm() {
-  const [listId, setListId] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
-  const isValidList =
-    username.length > 2 && listId.length > 3 && /^\d+$/.test(listId);
+  const [twitterListId, setTwitterListId] = useState<string>("");
+  const isValidList = twitterListId.length > 3 && /^\d+$/.test(twitterListId);
 
   return (
     <Stack direction="column">
@@ -23,33 +13,19 @@ function ListForm() {
         className="TextField"
         label="Twitter List ID"
         type="text"
-        onChange={(e) => setListId(e.target.value)}
+        onChange={(e) => setTwitterListId(e.target.value)}
         variant="outlined"
         size="small"
         sx={{
-          minWidth: "230px",
-          marginTop: "12px",
-          marginBottom: "12px",
-        }}
-      />
-      <TextField
-        className="TextField"
-        label="Twitter Username"
-        type="text"
-        onChange={(e) => setUsername(e.target.value)}
-        variant="outlined"
-        size="small"
-        sx={{
-          minWidth: "230px",
-          marginBottom: "18px",
-          marginTop: "8px",
+          maxWidth: "400px",
+          margin: "12px",
         }}
       />
       <Button disabled={!isValidList}>
         {isValidList ? (
           <Link
             style={{ textDecoration: "none", color: "inherit" }}
-            to={`/twitter/${listId}?username=${username}`}
+            to={`/twitter/${twitterListId}`}
           >
             Show Graph
           </Link>

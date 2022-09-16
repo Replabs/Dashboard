@@ -7,7 +7,6 @@ import LoadingView from "../LoadingView";
 import { TwitterHyperParams } from "../../pages/TwitterPage";
 import { baseUrl, networkOptions } from "../../utils";
 import { TwitterNode, TwitterEdge, TweetData } from "./types";
-import { useSearchParams } from "react-router-dom";
 
 type Props = {
   hyperParams: TwitterHyperParams;
@@ -57,23 +56,15 @@ function IsBeingCrawledView() {
 }
 
 function NeedsCrawlingView(props: {
-  listId: string;
+  list_id: string;
   onStartCrawling: () => void;
   onErrorCrawling: () => void;
 }) {
-  const [searchParams, setSearchParams] = useSearchParams();
-
   const crawl = async () => {
     props.onStartCrawling();
 
-    fetch(`${baseUrl()}/twitter_list/${props.listId}`, {
+    fetch(`${baseUrl()}/twitter_list/${props.list_id}`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: searchParams.get("username"),
-      }),
     }).catch(() => {
       props.onErrorCrawling();
     });
@@ -258,7 +249,7 @@ function TwitterGraph(props: Props) {
   } else if (data && !data.exists && !data.isBeingCrawled) {
     return (
       <NeedsCrawlingView
-        listId={props.hyperParams.list_id}
+        list_id={props.hyperParams.list_id}
         onStartCrawling={() => setData({ ...data!!, isBeingCrawled: true })}
         onErrorCrawling={() => {
           setData({ ...data!!, isBeingCrawled: false });
