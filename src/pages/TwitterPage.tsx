@@ -19,9 +19,9 @@ function TwitterPage() {
   const [hyperParams, setHyperParams] = useState<TwitterHyperParams>({
     list_id: list_id!!,
     topic: "Permaculture",
-    alpha: 0.65,
+    alpha: 0.85,
     sentiment_weight: 0.2,
-    similarity_threshold: 0.6,
+    similarity_threshold: 0.5,
   });
   const [topResults, setTopResults] = useState<TwitterNode[]>([]);
   const [

@@ -11,6 +11,9 @@
 # production
 /build
 
+# firebase
+/src/firebase.tsx
+
 # misc
 /.firebase
 .DS_Store
