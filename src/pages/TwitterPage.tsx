@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import "../App.css";
+import BottomInfoButton from "../components/BottomInfoButton";
 import TwitterGraph from "../components/twitter/TwitterGraph";
 import TwitterLeftPanel from "../components/twitter/TwitterLeftPanel";
 import { TwitterNode } from "../components/twitter/types";
@@ -31,6 +32,7 @@ function TwitterPage() {
 
   return (
     <React.Fragment>
+      <BottomInfoButton />
       <TwitterLeftPanel
         topResults={topResults}
         hyperParams={hyperParams}

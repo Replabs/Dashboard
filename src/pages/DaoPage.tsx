@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
+import BottomInfoButton from "../components/BottomInfoButton";
 import DaoGraph from "../components/dao/DaoGraph";
 import DaoLeftPanel from "../components/dao/DaoLeftPanel";
 import { DaoNode } from "../components/dao/types";
@@ -27,6 +28,7 @@ function DaoPage() {
 
   return (
     <React.Fragment>
+      <BottomInfoButton />
       <DaoLeftPanel
         topResults={topResults}
         hyperParams={hyperParams}

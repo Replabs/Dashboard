@@ -10,6 +10,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import BottomInfoButton from "../components/BottomInfoButton";
 
 function ListForm() {
   const [listId, setListId] = useState<string>("");
@@ -64,6 +65,7 @@ function ListForm() {
 function LandingPage() {
   return (
     <>
+      <BottomInfoButton />
       <Grid
         container
         justifyContent="center"
